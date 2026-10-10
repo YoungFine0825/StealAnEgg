@@ -1,0 +1,12 @@
+{
+    "mcpServers": {
+        "blender": {
+            "command": "uvx",
+            "args": ["mcp-for-blender"]
+        },
+		"vibeue": {
+		  "type": "remote",
+		  "url": "http://127.0.0.1:8088/mcp"
+		}
+    }
+}
