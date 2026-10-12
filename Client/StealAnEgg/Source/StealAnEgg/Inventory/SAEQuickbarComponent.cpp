@@ -146,6 +146,18 @@ void USAEQuickbarComponent::DebugPrintSlots() const
 	}
 }
 
+TArray<FSAEQuickbarSlot> USAEQuickbarComponent::GetOcuppiedSlots() const
+{
+	TArray<FSAEQuickbarSlot> Result;
+	for(const FSAEQuickbarSlot& Slot : Slots)
+	{
+		if(Slot.bOccupied)
+		{
+			Result.Add(Slot);
+		}
+	}
+	return Result;
+}
 
 
 

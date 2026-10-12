@@ -64,6 +64,9 @@ public:
 
 	virtual void OnUnPossess() override;
 
+	//处理玩家掉线逻辑
+	virtual void PawnLeavingGame() override;
+
 	virtual void OnRep_Pawn() override;
 
 	virtual void InitPlayerState() override;

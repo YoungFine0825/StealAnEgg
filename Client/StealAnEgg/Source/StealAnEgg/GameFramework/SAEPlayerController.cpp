@@ -72,6 +72,25 @@ void ASAEPlayerController::OnUnPossess()
 	Super::OnUnPossess();
 }
 
+void ASAEPlayerController::PawnLeavingGame()
+{
+	UWorld* World = GetWorld();
+	if(HasAuthority() && World && !World->bIsTearingDown)
+	{
+		ASAEPlayerState* SAEPlayerState = GetPlayerState();
+		if (IsValid(SAEPlayerState))
+		{
+			USAEStolenEggComponent* StolenEggComponent =SAEPlayerState->GetStolenEggComponent();
+			if (IsValid(StolenEggComponent))
+			{
+				StolenEggComponent->DropStolenEgg();//玩家掉线后，丢掉正在偷的蛋
+			}
+		}
+	}
+	Super::PawnLeavingGame();
+}
+
+
 void ASAEPlayerController::OnRep_Pawn()
 {
 	Super::OnRep_Pawn();

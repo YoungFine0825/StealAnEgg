@@ -40,6 +40,9 @@ public:
 
 	void DebugPrintSlots() const;
 
+	UFUNCTION(BlueprintPure, Category = "SAE|Quickbar")
+	TArray<FSAEQuickbarSlot> GetOcuppiedSlots() const;
+
 	UPROPERTY(BlueprintAssignable)
 	FSAEQuickbarChanged OnChanged;
 

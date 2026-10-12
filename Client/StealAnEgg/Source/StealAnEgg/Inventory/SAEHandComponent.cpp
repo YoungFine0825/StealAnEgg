@@ -19,6 +19,74 @@ void USAEHandComponent::GetLifetimeReplicatedProps(TArray<class FLifetimePropert
 	DOREPLIFETIME(USAEHandComponent,HandState);
 }
 
+bool USAEHandComponent::IsCarringAnyQuickbarItem() const
+{
+	if(IsHandEmpty())
+	{
+		return false;
+	}
+	if(HandState.Source != ESAEHandItemSource::Quickbar)
+	{
+		return false;
+	}
+	if(!HandState.ItemInstanceId.IsValid())
+	{
+		return false;
+	}
+	return true;
+}
+
+
+bool USAEHandComponent::IsCarringCertainQuickbarItem(FGuid ItemInstanceId) const
+{
+	if(!IsHandEmpty())
+	{
+		return false;
+	}
+	if(HandState.Source != ESAEHandItemSource::Quickbar)
+	{
+		return false;
+	}
+	if(HandState.ItemInstanceId != ItemInstanceId)
+	{
+		return false;
+	}
+	return true;
+}
+
+
+//作用域：服务端
+bool USAEHandComponent::TryOccupyWithQuickbarItem(FGuid ItemInstanceId,int32 QuickbarIndex)
+{
+	ASAEPlayerState* PlayerState = Cast<ASAEPlayerState>(GetOwner());
+	if(!PlayerState
+		|| !PlayerState->HasAuthority()
+		|| !ItemInstanceId.IsValid()
+		|| !IsHandEmpty()
+		|| IsCarringCertainQuickbarItem(ItemInstanceId))
+	{
+		return false;
+	}
+
+	USAEQuickbarComponent* Quickbar = PlayerState->GetQuickbarComponent();
+	if(!Quickbar || !Quickbar->HasFreeSlot() || !Quickbar->LockSelectionAddUnequip())
+	{
+		return false;
+	}
+
+	//如果当前手持快捷栏道具，道具仍然留在快捷栏，只是取消表现
+	HandState = FSAEHandState();
+	HandState.Source = ESAEHandItemSource::Quickbar;
+	HandState.ItemDefinitionId = 0;
+	HandState.ItemInstanceId = ItemInstanceId;
+	HandState.QuickbarIndex = QuickbarIndex;
+
+	RefreshGameplayTags();
+	NotifyPresentationChanged();
+	PlayerState->ForceNetUpdate();
+	return true;
+}
+
 //作用域：服务端
 bool USAEHandComponent::TryOccupyWithStolenEgg(int32 ItemDefinitionId)
 {
@@ -77,7 +145,7 @@ void USAEHandComponent::RefreshGameplayTags()
 	{
 		return;
 	}
-	const int32 HasItemCount = HandState.IsEmpty() ? 0 : 1;
+	const int32 HasItemCount = IsCarringAnyQuickbarItem() ? 1 : 0;
 	const int32 HasStolenEggCount = IsCarringStolenEgg() ? 1 : 0;
 
 	ASC->SetLooseGameplayTagCount(SAEGameplayTags::State_Carrying_Item,HasItemCount,EGameplayTagReplicationState::TagOnly);
@@ -107,3 +175,20 @@ void USAEHandComponent::NotifyPresentationChanged()
 	}
 }
 
+bool USAEHandComponent::ClearHand()
+{
+	ASAEPlayerState* PlayerState = Cast<ASAEPlayerState>(GetOwner());
+	if(!PlayerState || !PlayerState->HasAuthority())
+	{
+		return false;
+	}
+	HandState = FSAEHandState();
+	if(USAEQuickbarComponent* Quickbar = PlayerState->GetQuickbarComponent())
+	{
+		Quickbar->UnlockSelection();
+	}
+	RefreshGameplayTags();
+	NotifyPresentationChanged();
+	PlayerState->ForceNetUpdate();
+	return true;
+}

@@ -4,6 +4,8 @@ Low Poly 美术风格的多人在线偷蛋游戏。玩家进入周期性开放�
 
 > 基于 Unreal Engine 5（`EngineAssociation {554ADABB-46B5-46F1-C9FD-B7B543BCA701}`），C++ + Blueprint 混合开发，采用 Gameplay Ability System (GAS)。
 
+本项目使用 **VibeUE 插件**作为 AI 辅助开发工具，通过 MCP 将 AI 助手与 Unreal Editor 连接，辅助检查蓝图与资源配置、排查问题及执行编辑器操作。AI 辅助贯穿开发过程，相关改动仍需经过开发者审查与验证。
+
 ## 项目定位
 
 **Steal An Egg 是一款开源社区游戏**，对标 [SuperTuxKart](https://supertuxkart.net/) 一类的自由软件多人游戏：

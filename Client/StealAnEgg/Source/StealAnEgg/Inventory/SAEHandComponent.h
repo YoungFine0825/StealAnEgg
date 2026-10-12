@@ -31,19 +31,36 @@ public:
 		return HandState;
 	}
 
+	UFUNCTION(BlueprintPure)
 	bool IsHandEmpty() const
 	{
 		return HandState.IsEmpty();
 	}
 
+	UFUNCTION(BlueprintCallable)
+	bool IsCarringAnyQuickbarItem() const;
+
+	UFUNCTION(BlueprintCallable)
+	bool IsCarringCertainQuickbarItem(FGuid ItemInstanceId) const;
+
+	UFUNCTION(BlueprintCallable)
+	bool TryOccupyWithQuickbarItem(FGuid ItemInstanceId,int32 QuickbarIndex);
+
+	UFUNCTION(BlueprintCallable)
 	bool IsCarringStolenEgg() const
 	{
 		return HandState.Source == ESAEHandItemSource::StolenEgg;
 	}
 
+	UFUNCTION(BlueprintCallable)
 	bool TryOccupyWithStolenEgg(int32 ItemDefinitionId);
 
+	UFUNCTION(BlueprintCallable)
 	bool ReleaseStolenEgg();
+
+	UFUNCTION(BlueprintCallable)
+	bool ClearHand();
+	
 private:
 
 	UFUNCTION()
